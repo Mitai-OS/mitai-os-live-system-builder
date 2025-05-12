@@ -1,0 +1,7 @@
+# GRUB Linux Boot Entries, rules:
+#  - One per line
+#  - Do not put linux at start
+#  - You can fetch fields of distro.ini by using ${field} example do get user name use: ${user}
+#  - Label is at left-side of first : and command line is at right
+#
+${grub_name}: /${live_media_path}/vmlinuz file=/cdrom/preseed/${name}.seed boot=casper ${params} username=${user} userfullname=${userfullname} hostname=${host} locale=${locale} ---

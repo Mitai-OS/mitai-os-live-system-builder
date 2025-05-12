@@ -1,0 +1,14 @@
+# List of menu launchers to hide from the menu
+# One package per line
+################################################
+#
+#     VIM
+#
+################################################
+vim.desktop
+################################################
+#
+#     Plasma Emoji Picker
+#
+################################################
+org.kde.plasma.emojier.desktop

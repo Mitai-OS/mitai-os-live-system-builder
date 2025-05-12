@@ -1,0 +1,6 @@
+# List of Flatpak application IDs to install from Flathub
+# Ensure flatpak is listed at install-packages.lst
+# and configured
+#
+# Except for Flathub, flatpaks repository shold be configured
+# by Debian packages at debian-packages-urls.lst

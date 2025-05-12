@@ -1,0 +1,4 @@
+# List of packages to install from official APT repositories
+# or repositories configured by debian-packages-urls.lst
+# One package name per line
+# Pacotes para serem instalados a partir dos repositórios do Ubuntu

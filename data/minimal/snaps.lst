@@ -1,0 +1,3 @@
+# List of snap packages IDs to install from Snap Store
+# Ensure snapd is listed at install-packages.lst
+# and configured

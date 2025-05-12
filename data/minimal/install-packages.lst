@@ -1,0 +1,40 @@
+# List of packages to install from official APT repositories
+# or repositories configured by debian-packages-urls.lst
+# One package name per line
+# Pacotes para serem instalados a partir dos repositórios do Ubuntu
+################################################
+#
+#     GRUB
+#
+################################################
+grub-common
+grub-pc-bin
+grub-efi
+grub-efi-amd64-signed
+################################################
+#
+#     Disk formatting
+#
+################################################
+gdisk
+dosfstools
+################################################
+#
+#     System descompression
+#
+################################################
+squashfs-tools
+libarchive-tools
+################################################
+#
+#     Drivers
+#
+################################################
+printer-driver-all
+################################################
+#
+#     Módulos de configuração
+#
+################################################
+system-config-printer
+cups-pk-helper

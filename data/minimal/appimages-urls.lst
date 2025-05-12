@@ -1,0 +1,4 @@
+# URLs of AppImage packages to install using the AppImage installer
+# One URL per line
+# Ensure that following URL is at debian-packages-urls.lst
+# https://github.com/Mitai-OS/mita-i-appimage/releases/download/continuous/mita-i-appimage-core.deb

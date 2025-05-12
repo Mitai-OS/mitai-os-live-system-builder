@@ -1,0 +1,103 @@
+# List of packages to remove from the ISO
+# One package per line
+# You can remove base system packages you do not want preinstalled
+################################################
+#
+#     Libre Office
+#
+################################################
+libreoffice-common
+################################################
+#
+#     Firefox
+#
+################################################
+firefox
+################################################
+#
+#     Apport
+#
+################################################
+apport
+################################################
+#
+#     Thunderbird
+#
+################################################
+thunderbird
+################################################
+#
+#     KDE Apps
+#
+################################################
+ark
+dolphin
+elisa
+gwenview
+haruna
+info
+kate
+kcalc
+kcharselect
+kde-config-tablet
+kde-spectacle
+kdeconnect
+khelpcenter
+kinfocenter
+kmahjongg
+kmenuedit
+kmines
+konversation
+kpat
+krdc
+ksudoku
+ksystemlog
+kwalletmanager
+neochat
+okular
+partitionmanager
+plasma-discover
+plasma-systemmonitor
+plasma-welcome
+skanlite
+skanpage
+systemsettings
+usb-creator-kde
+################################################
+#
+#     Fcitx 5
+#
+################################################
+fcitx5
+fcitx5-config-qt
+fcitx5-frontend-all
+libfcitx5core7
+fcitx5-chinese-addons-data
+fcitx5-material-color
+im-config
+################################################
+#
+#     Kubuntu resources
+#
+################################################
+kubuntu-settings-desktop
+kubuntu-wallpapers
+kubuntu-web-shortcuts
+################################################
+#
+#     Calamares
+#
+################################################
+calamares
+################################################
+#
+#     Canonical services
+#
+################################################
+snapd
+ubuntu-advantage-tools
+ubuntu-drivers-common
+ubuntu-kernel-accessories
+ubuntu-pro-client
+ubuntu-release-upgrader-core
+unattended-upgrades

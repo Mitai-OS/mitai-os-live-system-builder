@@ -1,0 +1,3 @@
+# List of packages whose files will be removed but left registered in dpkg
+# ONLY use this if you want to remove the package  but keep metadata retained
+
