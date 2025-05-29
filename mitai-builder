@@ -145,6 +145,10 @@ function extract-image {
       if [ -d "bin.usr-is-merged" ]; then
         rm -rf bin.usr-is-merged lib.usr-is-merged sbin.usr-is-merged
       fi
+      if [ -f "${variant_data_dir}/sources.list" ]; then
+        rm -rf etc/apt/sources.list
+        cp "${variant_data_dir}/sources.list" etc/apt/sources.list
+      fi
     )
 }
 
