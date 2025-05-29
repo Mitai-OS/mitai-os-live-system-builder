@@ -189,6 +189,10 @@ fi
 ' > "chroot/usr/sbin/mita-i-etc-merge"
     chmod +x "chroot/usr/sbin/mita-i-etc-merge"
 
+    mkdir -p  chroot/etc/etc/systemd/system/sysinit.target.wants/ \
+              chroot/etc/systemd/system/                          \
+              chroot/etc/xdg/autostart/
+      
     echo '[Unit]
 Description=Merge /etc with /usr
 DefaultDependencies=no
@@ -203,8 +207,25 @@ RemainAfterExit=yes
 [Install]
 WantedBy=sysinit.target
 ' > "chroot/etc/systemd/system/mita-i-etc-merge.service"
-    mkdir -p /etc/systemd/system/sysinit.target.wants
     chroot "chroot" ln -fs /etc/systemd/system/mita-i-etc-merge.service /etc/systemd/system/sysinit.target.wants/mita-i-etc-merge.service
+
+    echo "
+[Desktop Entry]
+Type=Application
+Exec=/bin/bash -c 'if grep -qw kde-plasma-lock /proc/cmdline; then qdbus org.kde.plasmashell /PlasmaShell evaluateScript "'"'"lockCorona(true)"'"'"; fi'
+Hidden=false
+NoDisplay=true
+X-GNOME-Autostart-enabled=true
+Name=Lock Plasma Panels If Kernel Arg Present
+
+" > "chroot/etc/xdg/autostart/plasma-lock-panels.desktop"
+
+    echo '
+
+[KDE Action Restrictions][$i]
+ghns=false
+
+' >> chroot/etc/xdg/kdeglobals
 
     # Regenerate vmlinuz
     local kernel=$(chroot chroot/ dpkg -l | grep linux-image-.*-generic | cut -d' ' -f 3)
