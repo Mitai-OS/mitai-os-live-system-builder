@@ -267,12 +267,6 @@ function apply-mitai-root-structure {
         ln -s usr/state var
       fi
 
-      echo "  - Merge /mnt with /media"
-      if [ ! -L "mnt" ]; then
-        mv mnt media/0-devices
-        ln -s media/0-devices mnt
-      fi
-
       echo "  - Merge /opt with applications/thirdparty"
       if [ ! -L "opt" ]; then
         mv opt applications/thirdparty
@@ -299,7 +293,21 @@ function apply-mitai-root-structure {
       echo "  - Rename /home as /users"
       if [ ! -L "home" ]; then
         mv home/ users
+        rm users/.directory
         ln -s users home
+      fi
+
+      echo "  - Rename /mnt as /mount"
+      if [ ! -L "mnt" ]; then
+        mv mnt/ mount
+        ln -s mount mnt
+      fi
+
+      echo "  - Rename /media as /storage"
+      if [ ! -L "media" ]; then
+        mv media/ storage
+        rm storage/.directory
+        ln -s storage media
       fi
 
       echo "  - Merge /root with /users"
@@ -330,14 +338,17 @@ function apply-mitai-root-structure {
 
 
       # Generate the .hidden file
+      echo "  - Hide Linux Filesystem Hierarchy"
       (
         echo "bin"
         echo "boot"
+        echo "cdrom"
         echo "dev"
         echo "etc"
         echo "home"
         echo "lib"
         echo "lib64"
+        echo "media"
         echo "mnt"
         echo "opt"
         echo "proc"
