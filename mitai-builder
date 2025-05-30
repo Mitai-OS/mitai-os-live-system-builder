@@ -595,6 +595,35 @@ function remove-packages-contents {
     chroot chroot/ apt-get update
 }
 
+function pin-packages-version {
+    show-header "Remove package contents" 
+
+    mkdir -p chroot/etc/apt/preferences.d/
+
+    if [ "$(sed 's|#.*||g' "${variant_data_dir}/pin-packages-version.lst" | xargs)" = "" ]; then
+      echo "No packages to pin version"
+      return
+    fi
+
+    echo -n > chroot/etc/apt/preferences.d/pinned-packages
+
+    for package in $(sed "s|#.*||g" "${variant_data_dir}/pin-packages-version.lst" | xargs); do
+      echo "  - Pinning '${package}' version"
+      (
+        echo "Package: ${package}"
+        echo "Pin: release *"
+        echo "Pin-Priority: -1"
+        echo
+      ) >> chroot/etc/apt/preferences.d/pinned-packages
+      echo "  - Holding package '${package}'"
+      chroot "chroot" apt-mark hold "${package}" > /dev/null
+    done 
+
+    echo "  - Synchronizing DPKG and APT"
+    chroot chroot/ dpkg --clear-avail
+    chroot chroot/ apt-get update
+}
+
 function cleanup-system-image {
     show-header "Clear the system image" 
 
