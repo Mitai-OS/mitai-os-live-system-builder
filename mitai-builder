@@ -578,6 +578,9 @@ function remove-packages-contents {
       echo "  - Generating md5sum of '/etc/apt/preferences.d/${package}'"
       chroot chroot/ md5sum "etc/apt/preferences.d/${package}" > chroot/var/lib/dpkg/info/${package}.md5sums
 
+      echo "  - Holding package '${package}'"
+      chroot "chroot" apt-mark hold "${package}" > /dev/null
+
       echo "  - Removing triggers"
       for trigger in conffiles postrm prerm postinst preinst shlibs triggers; do
         if [ -f "chroot/var/lib/dpkg/info/${package}.${trigger}" ]; then
