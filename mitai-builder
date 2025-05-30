@@ -366,6 +366,65 @@ function apply-mitai-root-structure {
     )
 }
 
+function generate-icons {
+  show-header "Generate icons for / directories"
+
+  (
+    cd "chroot"
+
+    echo "  - /applications"
+    (
+      echo "[Desktop Entry]"
+      echo "Icon=folder-appimage"
+    ) > applications/.directory
+
+    echo "  - /containers"
+    (
+      echo "[Desktop Entry]"
+      echo "Icon=folder-flatpak"
+    ) > containers/.directory
+
+    echo "  - /${system_dir}"
+    (
+      echo "[Desktop Entry]"
+      echo "Icon=folder-root"
+    ) > ${system_dir}/.directory
+      echo "    - /${system_dir}/linux"
+      (
+        echo "[Desktop Entry]"
+        echo "Icon=preferences-system-linux"
+      ) > ${system_dir}/linux/.directory
+      echo "    - /${system_dir}/versions"
+      (
+        echo "[Desktop Entry]"
+        echo "Icon=preferences-git"
+      ) > ${system_dir}/versions/.directory
+      echo "    - /${system_dir}/shared"
+      (
+        echo "[Desktop Entry]"
+        echo "Icon=folder-build"
+      ) > ${system_dir}/shared/.directory
+
+    echo "  - /mount"
+    (
+      echo "[Desktop Entry]"
+      echo "Icon=drive-harddisk-root"
+    ) > mount/.directory
+
+    echo "  - /storage"
+    (
+      echo "[Desktop Entry]"
+      echo "Icon=drive-harddisk"
+    ) > storage/.directory
+
+    echo "  - /users"
+    (
+      echo "[Desktop Entry]"
+      echo "Icon=user-home"
+    ) > users/.directory
+  )
+}
+
 function remove-base-packages {
     show-header "Remove base packages" 
 
