@@ -584,7 +584,10 @@ function remove-packages-contents {
           rm "chroot/var/lib/dpkg/info/${package}.${trigger}"
         fi
       done
+      echo
     done 
+    echo "  - Synchronizing DPKG and APT"
+    echo 
     chroot chroot/ dpkg --clear-avail
     chroot chroot/ apt-get update
 }
