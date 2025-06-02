@@ -238,11 +238,6 @@ ghns=false
 
         cp chroot/usr/share/plasma/desktoptheme/breeze-light/colors chroot/usr/share/plasma/desktoptheme/default
     fi
-
-    # Regenerate vmlinuz
-    local kernel=$(chroot chroot/ dpkg -l | grep linux-image-.*-generic | cut -d' ' -f 3)
-    chroot "chroot" apt update
-    chroot "chroot" apt install casper ${kernel} --reinstall --allow-downgrades -y
 }
 
 function enable-firewall {
@@ -702,6 +697,19 @@ function cleanup-system-image {
       cp "chroot/usr/share/applications/${file}" "chroot/usr/local/share/applications"
       sed -i 's|\[Desktop Entry]|[Desktop Entry]\nNoDisplay=true|g' "chroot/usr/local/share/applications/${file}"
     done
+
+    if [ -f "chroot/usr/share/plymouth/themes/${system_dir}/${system_dir}.plymouth" ]; then
+      echo "  - Setting up plymouth theme"
+        rm "chroot/etc/alternatives/default.plymouth"
+        ln -s "/usr/share/plymouth/themes/${system_dir}/${system_dir}.plymouth" chroot/etc/alternatives/default.plymouth
+    fi
+
+    echo "  - Recovering kernel and inird"
+    echo
+    local kernel=$(chroot chroot/ dpkg -l | grep linux-image-.*-generic | cut -d' ' -f 3)
+    chroot "chroot" apt update
+    chroot "chroot" apt install ${kernel} --reinstall --allow-downgrades -y
+    echo
     
     echo "  - Cleaning up APT"
     chroot "chroot" apt clean
