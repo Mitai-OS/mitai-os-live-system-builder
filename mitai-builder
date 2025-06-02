@@ -237,6 +237,23 @@ ghns=false
     chroot "chroot" apt install casper ${kernel} --reinstall --allow-downgrades -y
 }
 
+function enable-firewall {
+  show-header "Enable Firewall" 
+
+  echo "  - Block external system access"
+  echo
+  chroot "chroot" ufw default deny incoming | grep -v "^("
+  echo
+  echo "  - Allow access to external systems"
+  echo
+  chroot "chroot" ufw default allow outgoing | grep -v "^("
+  echo
+  echo "  - Enable UFW"
+  echo
+  chroot "chroot" ufw enable 2> /dev/null
+  echo
+}
+
 function apply-mitai-root-structure {
     show-header "Apply Mita'i OS root structure" 
 
