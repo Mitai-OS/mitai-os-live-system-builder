@@ -620,6 +620,48 @@ function pin-packages-version {
     done 
 
     echo "  - Synchronizing DPKG and APT"
+    echo
+    chroot chroot/ dpkg --clear-avail
+    chroot chroot/ apt-get update
+}
+
+function remove-system-files {
+    show-header "Remove system files" 
+
+    if [ "$(sed 's|#.*||g' "${variant_data_dir}/remove-system-files.lst" | xargs)" = "" ]; then
+      echo "No packages to pin version"
+      return
+    fi
+    
+    for file in $(sed "s|#.*||g" "${variant_data_dir}/remove-system-files.lst" | xargs); do
+      if [ -d "chroot/${file}" ]; then
+        echo "  - Removing directory '${file}'"
+        rm -rf "chroot/${file}"
+        mkdir -p "chroot/${file}"
+
+        escaped_file=$(printf '%s\n' "${file}" | sed 's/[\/&]/\\&/g')
+        sed -i "/${escaped_file}/d" chroot/var/lib/dpkg/info/*.list
+
+        file=$(echo ${file} | cut -c 3- )
+        escaped_file=$(printf '%s\n' "${file}" | sed 's/[\/&]/\\&/g')
+        sed -i "/${escaped_file}/d" chroot/var/lib/dpkg/info/*.list
+      fi
+      
+      if [ -f "chroot/${file}" ]; then
+        echo "  - Removing file '${file}'"
+        rm -f "chroot/${file}"
+
+        escaped_file=$(printf '%s\n' "${file}" | sed 's/[\/&]/\\&/g')
+        sed -i "/${escaped_file}$/d" chroot/var/lib/dpkg/info/*.list
+
+        file=$(echo ${file} | cut -c 3- )
+        escaped_file=$(printf '%s\n' "${file}" | sed 's/[\/&]/\\&/g')
+        sed -i "/${escaped_file}$/d" chroot/var/lib/dpkg/info/*.list
+      fi
+    done 
+
+    echo "  - Synchronizing DPKG and APT"
+    echo
     chroot chroot/ dpkg --clear-avail
     chroot chroot/ apt-get update
 }
