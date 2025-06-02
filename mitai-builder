@@ -213,7 +213,12 @@ WantedBy=sysinit.target
 ' > "chroot/etc/systemd/system/mita-i-etc-merge.service"
     chroot "chroot" ln -fs /etc/systemd/system/mita-i-etc-merge.service /etc/systemd/system/sysinit.target.wants/mita-i-etc-merge.service
 
-    echo "
+
+
+    if [ -d "chroot/usr/share/plasma" ]; then
+        mkdir -p "chroot/etc/xdg/autostart/"
+
+        echo "
 [Desktop Entry]
 Type=Application
 Exec=/bin/bash -c 'if grep -qw kde-plasma-lock /proc/cmdline; then qdbus org.kde.plasmashell /PlasmaShell evaluateScript "'"'"lockCorona(true)"'"'"; fi'
@@ -230,6 +235,9 @@ Name=Lock Plasma Panels If Kernel Arg Present
 ghns=false
 
 ' >> chroot/etc/xdg/kdeglobals
+
+        cp chroot/usr/share/plasma/desktoptheme/breeze-light/colors chroot/usr/share/plasma/desktoptheme/default
+    fi
 
     # Regenerate vmlinuz
     local kernel=$(chroot chroot/ dpkg -l | grep linux-image-.*-generic | cut -d' ' -f 3)
