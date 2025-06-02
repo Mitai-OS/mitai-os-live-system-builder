@@ -621,7 +621,7 @@ function remove-packages-contents {
 }
 
 function pin-packages-version {
-    show-header "Remove package contents" 
+    show-header "Pin package versions" 
 
     mkdir -p chroot/etc/apt/preferences.d/
 
