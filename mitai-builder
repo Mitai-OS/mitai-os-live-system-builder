@@ -662,7 +662,6 @@ function remove-system-files {
       if [ -d "chroot/${file}" ]; then
         echo "  - Removing directory '${file}'"
         rm -rf "chroot/${file}"
-        mkdir -p "chroot/${file}"
 
         escaped_file=$(printf '%s\n' "${file}" | sed 's/[\/&]/\\&/g')
         sed -i "/${escaped_file}/d" chroot/var/lib/dpkg/info/*.list
@@ -752,14 +751,14 @@ function build-grub {
     cp --dereference chroot/boot/initrd.img image/${live_media_path}/initrd
 
     (
-        sed "s|#.*||g" "${variant_data_dir}/grub-entries.yaml"  | sed '/^$/d' | sed "s|^|menuentry |;s|$|\n  initrd /${live_media_path}/initrd\n}\n|;s|:| {\n  linux|"
+        sed "s|#.*||g;/^$/d;s|^|menuentry \"|g;s|$|\n  initrd /\${live_media_path}/initrd\n}\n|;s|: |\" {\n  linux |" "${variant_data_dir}/grub-entries.yaml"
         
-        echo "menuentry \"Reboot\" {reboot}"
-        echo "menuentry \"Shutdown\" {halt}"
-        echo
+        echo -e "\nmenuentry \"Reboot\" {\n  reboot\n}\n"
+        echo -e "menuentry \"Shutdown\" {\n halt\n}"
     ) > image/boot/grub/loopback.cfg
 
     local escaped_user=$(printf '%s\n'             "$user"            | sed -e 's/[\/&]/\\&/g;s/"/\\"/g')
+    local escaped_userfullname=$(printf '%s\n'     "$userfullname"    | sed -e 's/[\/&]/\\&/g;s/"/\\"/g')
     local escaped_host=$(printf '%s\n'             "$host"            | sed -e 's/[\/&]/\\&/g;s/"/\\"/g')
     local escaped_name=$(printf '%s\n'             "$name"            | sed -e 's/[\/&]/\\&/g;s/"/\\"/g')
     local escaped_grub_name=$(printf '%s\n'        "$grub_name"       | sed -e 's/[\/&]/\\&/g;s/"/\\"/g')
@@ -775,9 +774,10 @@ function build-grub {
 
     sed -i \
       -e "s/\${user}/$escaped_user/g"                       \
+      -e "s/\${userfullname}/\"$escaped_userfullname\"/g"   \
       -e "s/\${host}/$escaped_host/g"                       \
       -e "s/\${name}/$escaped_name/g"                       \
-      -e "s/\${grub_name}/\"$escaped_grub_name\"/g"         \
+      -e "s/\${grub_name}/$escaped_grub_name/g"             \
       -e "s/\${params}/$escaped_params/g"                   \
       -e "s/\${keyboard}/$escaped_keyboard/g"               \
       -e "s/\${base}/$escaped_base/g"                       \
@@ -806,9 +806,8 @@ function build-grub {
         echo "	insmod gfxterm"
         echo "	terminal_output gfxterm"
         echo "fi"
-
-        cat "image/boot/grub/loopback.cfg"
         echo
+        cat "image/boot/grub/loopback.cfg"
     ) > image/isolinux/grub.cfg
 
     (
