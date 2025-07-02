@@ -257,6 +257,25 @@ function enable-firewall {
   echo
 }
 
+function set-system-localization {
+  show-header "Setting the system locale"
+
+  echo " - Timezone"
+  ln -sf "/usr/share/zoneinfo/${timezone}" chroot/etc/localtime
+
+  echo " - Language"
+  echo "LANG=${language}.UTF-8"   >  chroot/etc/default/locale
+  echo "LC_ALL=${language}.UTF-8" >> chroot/etc/default/locale
+  echo "${language}.UTF-8 UTF-8"  >> chroot/etc/locale.gen
+
+  echo " - Keyboard"
+  echo "KEYMAP=${keyboard}" > chroot/etc/vconsole.conf
+  cat <<EOF > chroot/etc/default/keyboard
+XKBLAYOUT="${keyboard}"
+BACKSPACE="guess"
+EOF
+}
+
 function apply-mitai-root-structure {
     show-header "Apply Mita'i OS root structure" 
 
