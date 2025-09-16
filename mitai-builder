@@ -520,7 +520,23 @@ function install-system-packages {
       echo "No packages to install"
       return
     fi
-    chroot "chroot" apt install $(sed "s|#.*||g" "${variant_data_dir}/install-packages.lst" | xargs) -y
+
+    local available_packages=$(mktemp)
+    local packages_to_install=$(mktemp)
+
+    apt list --all-versions | grep "/" | cut -d\/ -f1 | sort -u > "${available_packages}"
+    sed 's|#.*||g' "${variant_data_dir}/install-packages.lst" | sed '/^$/d' | xargs | tr ' ' '\n' | sort -u > "${packages_to_install}"
+
+    local missing=$(comm -13 "${available_packages}" "${packages_to_install}")
+    if [ ! "${missing}" = "" ]; then
+      echo
+      echo "Missing packages:"
+      echo "${missing}" | sed 's|^|  - |g'
+    fi
+
+    chroot "chroot" apt install $(comm -12 "${available_packages}" "${packages_to_install}" | xargs) -y
+
+    rm -rf "${available_packages}" "${packages_to_install}"
 }
 
 function install-flapak-packages  {
