@@ -477,7 +477,16 @@ function remove-base-packages {
       echo "No packages to remove"
       return
     fi
-    chroot "chroot" apt autoremove --purge $(sed "s|#.*||g" "${variant_data_dir}/remove-packages.lst" | xargs) -y   
+
+    local installed_packages=$(mktemp)
+    local packages_to_remove=$(mktemp)
+
+    chroot "chroot" dpkg-query -W -f='${Package}\n' | sort -u > "${installed_packages}"
+    sed 's|#.*||g' "${variant_data_dir}/remove-packages.lst" | sed '/^$/d' | tr ' ' '\n' | sort -u > "${packages_to_remove}"
+
+    chroot "chroot" apt autoremove --purge $(comm -12 "${installed_packages}" "${packages_to_remove}" | xargs) -y   
+
+    rm -rf "${installed_packages}" "${packages_to_remove}"
 }
 
 function install-debian-packages  {
