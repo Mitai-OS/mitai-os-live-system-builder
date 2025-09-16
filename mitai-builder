@@ -1113,15 +1113,22 @@ if [ "${2}" = "--help" ]; then
   exit
 fi
 #-----------------------------------------------------------------------------------------------------------------------------------------
-if [ "${2}" = "--chroot" ]; then
+command=${2}
+#-----------------------------------------------------------------------------------------------------------------------------------------
+if echo "${command}" | grep -q "^--url=" ; then
+  url=$(echo "${command}" | cut -d= -f2-)
+  command=${3}
+fi
+#-----------------------------------------------------------------------------------------------------------------------------------------
+if [ "${command}" = "--chroot" ]; then
   --bind-mount
   --enter-chroot
   --bind-umount
   exit
 fi
 #-----------------------------------------------------------------------------------------------------------------------------------------
-if [ ! "${2}" = "" ]; then
-  option=$(grep '^function' "${script}" | grep -Ev "EXIT|show-header|--|function-template|mount-virtual-fs" | cut -d' ' -f2 | grep -- ^"${2}"$)
+if [ ! "${command}" = "" ]; then
+  option=$(grep '^function' "${script}" | grep -Ev "EXIT|show-header|--|function-template|mount-virtual-fs" | cut -d' ' -f2 | grep -- ^"${command}"$)
   if [ ! "${option}" == "" ]; then
     step_count=3
 
@@ -1129,7 +1136,7 @@ if [ ! "${2}" = "" ]; then
     --bind-mount
 
     unset option
-    eval "'$(grep '^function' "${script}" | grep -Ev -- "EXIT|show-header|--|function-template|mount-virtual-fs" | cut -d' ' -f2 | grep -- ^${2}$)'"
+    eval "'$(grep '^function' "${script}" | grep -Ev -- "EXIT|show-header|--|function-template|mount-virtual-fs" | cut -d' ' -f2 | grep -- ^${command}$)'"
 
     show-header "Finish virtual FS" 
     --bind-umount
@@ -1137,7 +1144,7 @@ if [ ! "${2}" = "" ]; then
     echo
     exit
   fi
-  echo "Unknown option '${2}' availables:"
+  echo "Unknown option '${command}' availables:"
   echo
   grep '^function' "${script}" | grep -Ev -- "EXIT|show-header|--|function-template|mount-virtual-fs" | cut -d' ' -f2  | grep "" | sort | sed 's|^|  * |'
   echo
