@@ -176,45 +176,6 @@ function prepare-base-image {
     chroot "chroot" sh -c "echo 'locales locales/default_environment_locale select pt_BR.UTF-8'         | debconf-set-selections"
     chroot "chroot" sh -c "echo 'debconf debconf/frontend select Noninteractive'                        | debconf-set-selections"
 
-    echo '#!/bin/bash
-if [ ! -L /etc ]; then
-  mv /etc /usr/config
-  ln -s /usr/config /etc
-
-  mkdir -p "/'${system_dir}'/shared/accounts/"
-
-  for file in passwd shadow group gshadow login.defs sudoers sudoers.d; do
-    if [ ! -L "/etc/${file}" ]; then
-      mv "/etc/${file}" "/mita-i/shared/accounts"
-    fi
-    ln -fs "/'${system_dir}'/shared/accounts/${file}" "/etc/${file}"
-  done
-fi
-' > "chroot/usr/sbin/mita-i-etc-merge"
-    chmod +x "chroot/usr/sbin/mita-i-etc-merge"
-
-    mkdir -p  chroot/etc/etc/systemd/system/sysinit.target.wants/ \
-              chroot/etc/systemd/system/                          \
-              chroot/etc/xdg/autostart/
-      
-    echo '[Unit]
-Description=Merge /etc with /usr
-DefaultDependencies=no
-Before=sysinit.target
-ConditionPathIsSymbolicLink=!/etc
-
-[Service]
-Type=oneshot
-ExecStart=/usr/sbin/mita-i-etc-merge
-RemainAfterExit=yes
-
-[Install]
-WantedBy=sysinit.target
-' > "chroot/etc/systemd/system/mita-i-etc-merge.service"
-    chroot "chroot" ln -fs /etc/systemd/system/mita-i-etc-merge.service /etc/systemd/system/sysinit.target.wants/mita-i-etc-merge.service
-
-
-
     if [ -d "chroot/usr/share/plasma" ]; then
         mkdir -p "chroot/etc/xdg/autostart/"
 
@@ -332,7 +293,7 @@ function apply-mitai-root-structure {
       echo "  - Rename /home as /users"
       if [ ! -L "home" ]; then
         mv home/ users
-        rm users/.directory
+        rm users/.directory > /dev/null 2>&1
         ln -s users home
       fi
 
@@ -345,7 +306,7 @@ function apply-mitai-root-structure {
       echo "  - Rename /media as /storage"
       if [ ! -L "media" ]; then
         mv media/ storage
-        rm storage/.directory
+        rm storage/.directory > /dev/null 2>&1
         ln -s storage media
       fi
 
@@ -524,7 +485,7 @@ function install-system-packages {
     local available_packages=$(mktemp)
     local packages_to_install=$(mktemp)
 
-    apt list --all-versions | grep "/" | cut -d\/ -f1 | sort -u > "${available_packages}"
+    chroot "chroot" apt list --all-versions | grep "/" | cut -d\/ -f1 | sort -u > "${available_packages}"
     sed 's|#.*||g' "${variant_data_dir}/install-packages.lst" | sed '/^$/d' | xargs | tr ' ' '\n' | sort -u > "${packages_to_install}"
 
     local missing=$(comm -13 "${available_packages}" "${packages_to_install}")
